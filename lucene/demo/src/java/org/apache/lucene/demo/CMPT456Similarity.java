@@ -13,8 +13,8 @@ public class CMPT456Similarity extends ClassicSimilarity {
     }
 
     @Override
-    public float idf(long docFreq, long docCount) {
-        float res = (float) (Math.log((docCount + 2) / (docFreq + 2)) + 1);
+    public float idf(long doc_Freq, long doc_Count) {
+        float res = (float) (Math.log((doc_Count + 2) / (doc_Freq + 2)) + 1);
         return res;
     }
 }
