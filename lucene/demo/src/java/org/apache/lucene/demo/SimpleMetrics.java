@@ -1,21 +1,5 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package org.apache.lucene.demo;
 
+package org.apache.lucene.demo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,9 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 
-
-
-import org.apache.lucene.index.Term;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -39,14 +20,12 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.index.Term;
 
-/** Simple command-line based search demo. */
 public class SimpleMetrics {
+	private SimpleMetrics(){}
 
-  private SimpleMetrics() {}
-
-  /** Simple command-line based search demo. */
-  public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
     String usage =
       "Usage:\tjava org.apache.lucene.demo.SearchFiles [-index dir] [-field f] [-repeat n] [-queries file] [-query string] [-raw] [-paging hitsPerPage]\n\nSee http://lucene.apache.org/core/4_1_0/demo/ for details.";
     if (args.length > 0 && ("-h".equals(args[0]) || "-help".equals(args[0]))) {
@@ -116,18 +95,18 @@ public class SimpleMetrics {
       if (line.length() == 0) {
         break;
       }
-
-
- 
+      
       Query query = parser.parse(line);
       System.out.println("Searching for: " + query.toString(field));
-      Term term = new Term(field,query.toString(field));
-      int doc_freq = reader.docFreq(term);
-      long term_freq = reader.totalTermFreq(term);
-      System.out.println("Number of documents containing the term:" + doc_freq);
-      System.out.println("Total number of occurrences of the term across all documents: " + term_freq);
 
-            
+      Term content = new Term(field, query.toString(field));
+      int doc_freq = reader.docFreq(content);
+      System.out.println("The Document Frequency is: ");
+      System.out.println(doc_freq);
+      long term_freq = reader.totalTermFreq(content);
+      System.out.println("The Term Frequency is: ");
+      System.out.println(term_freq);      
+
       if (repeat > 0) {                           // repeat & time as benchmark
         Date start = new Date();
         for (int i = 0; i < repeat; i++) {
@@ -145,7 +124,6 @@ public class SimpleMetrics {
     }
     reader.close();
   }
-
   /**
    * This demonstrates a typical paging search scenario, where the search engine presents 
    * pages of size n to the user. The user can then go to the next page if interested in

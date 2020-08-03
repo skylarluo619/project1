@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.lucene.demo;
 
 import java.io.BufferedReader;
@@ -44,13 +28,12 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.benchmark.byTask.feeds.DemoHTMLParser.Parser;
-import org.apache.lucene.demo.CMPT456Analyzer;
+import org.apache.lucene.demo.CMPT456Similarity;
 
-public class TFIDFHtmlIndexFiles{
+public class TFIDFHtmlIndexFiles {
 
 	private TFIDFHtmlIndexFiles(){}
 
-	/** Index all text files under a directory. */
 	public static void main(String[] args) throws SAXException {
 		String usage = "java org.apache.lucene.demo.IndexFiles"
 					 + " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
@@ -86,10 +69,11 @@ public class TFIDFHtmlIndexFiles{
 		try {
 	  		System.out.println("Indexing to directory '" + indexPath + "'...");
 	  		Directory dir = FSDirectory.open(Paths.get(indexPath));
-	  		Analyzer analyzer456 = new CMPT456Analyzer();
-	  		IndexWriterConfig iwc = new IndexWriterConfig(analyzer456);
-            CMPT456Similarity similarity456 = new CMPT456Similarity();
-            iwc.setSimilarity(similarity456);
+	  		Analyzer analyzer = new StandardAnalyzer();
+	  		IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+	  		CMPT456Similarity similar = new CMPT456Similarity();
+	  		iwc.setSimilarity(similar);
+	  		
 	  		if (create) {
 				// Create a new index in the directory, removing any
 				// previously indexed documents:
@@ -187,14 +171,14 @@ public class TFIDFHtmlIndexFiles{
 			// so that the text of the file is tokenized and indexed, but not stored.
 			// Note that FileReader expects the file to be in UTF-8 encoding.
 			// If that's not the case searching for special characters will fail.
-            try{
-                Parser parser = new Parser(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));		
-			    doc.add(new TextField("contents", parser.body.toString(), Field.Store.YES));
-                doc.add(new StringField("title", parser.title.toString(), Field.Store.YES));
-            }catch(SAXException e){
+
+			try{
+				Parser parser = new Parser(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));	
+				doc.add(new TextField("contents", parser.body.toString(), Field.Store.YES));
+				doc.add(new StringField("title", parser.title.toString(), Field.Store.YES));
+			}catch(SAXException e){
                 e.printStackTrace();
             }
-
 			if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
 				// New index, so we just add the document (no old document can be there):
 				System.out.println("adding " + file);
@@ -208,5 +192,4 @@ public class TFIDFHtmlIndexFiles{
 			}
 		}
 	}
-
 }

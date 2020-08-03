@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.lucene.demo;
 
 import java.io.BufferedReader;
@@ -187,13 +171,15 @@ public class HtmlIndexFiles{
 			// so that the text of the file is tokenized and indexed, but not stored.
 			// Note that FileReader expects the file to be in UTF-8 encoding.
 			// If that's not the case searching for special characters will fail.
-            try{
-                Parser parser = new Parser(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));		
-			    doc.add(new TextField("contents", parser.body.toString(), Field.Store.YES));
-                doc.add(new StringField("title", parser.title.toString(), Field.Store.YES));
-            }catch(SAXException e){
-                e.printStackTrace();
-            }
+
+                try{
+                Parser p = new Parser(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
+        		doc.add(new StringField("title", p.title.toString(), Field.Store.YES));		
+        		doc.add(new TextField("contents", p.body.toString(), Field.Store.YES));
+      			}
+      			catch(SAXException error){
+        		System.out.println("Error");
+      			}
 
 			if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
 				// New index, so we just add the document (no old document can be there):

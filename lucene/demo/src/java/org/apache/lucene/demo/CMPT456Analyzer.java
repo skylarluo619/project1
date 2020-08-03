@@ -14,16 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// package org.apache.lucene.analysis.standard;
-
-
 package org.apache.lucene.demo;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -36,7 +32,6 @@ import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.StopwordAnalyzerBase;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.WordlistLoader;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.en.PorterStemFilter;
@@ -54,15 +49,21 @@ public final class CMPT456Analyzer extends StopwordAnalyzerBase {
   public static final CharArraySet ENGLISH_STOP_WORDS_SET;
   
   static {
-    List<String> stopWords = new ArrayList<>();
-    try(InputStream InputStream = CMPT456Analyzer.class.getResourceAsStream("stopwords.txt");
-      BufferedReader f_txt = new BufferedReader(new InputStreamReader(InputStream,StandardCharsets.UTF_8))){
-      f_txt.lines().forEach(line -> stopWords.add(line));
-    } catch (IOException e) {
-      e.printStackTrace();
+    List<String> stopArray = new ArrayList<>();
+    String tmp_word = null;
+    try{
+      BufferedReader readerList = new BufferedReader(new InputStreamReader(CMPT456Analyzer.class.getResourceAsStream("stopwords.txt"), StandardCharsets.UTF_8));
+      boolean bl = true;
+      while (bl == true){
+      	tmp_word = readerList.readLine();
+      	if (tmp_word == null){
+      	  bl = false;}
+        stopArray.add(tmp_word);
+      }
+    }catch(IOException error){
+      System.out.println("Error");
     }
-
-    final CharArraySet stopSet = new CharArraySet(stopWords, false);
+    final CharArraySet stopSet = new CharArraySet(stopArray, false);
     ENGLISH_STOP_WORDS_SET = CharArraySet.unmodifiableSet(stopSet); 
   }
   
@@ -99,7 +100,7 @@ public final class CMPT456Analyzer extends StopwordAnalyzerBase {
    * up at this token length and emitted as multiple tokens.  If you need to
    * skip such large tokens, you could increase this max length, and then
    * use {@code LengthFilter} to remove long tokens.  The default is
-   * {@link StandardAnalyzer#DEFAULT_MAX_TOKEN_LENGTH}.
+   * {@link CMPT456Analyzer#DEFAULT_MAX_TOKEN_LENGTH}.
    */
   public void setMaxTokenLength(int length) {
     maxTokenLength = length;
@@ -114,6 +115,7 @@ public final class CMPT456Analyzer extends StopwordAnalyzerBase {
 
   @Override
   protected TokenStreamComponents createComponents(final String fieldName) {
+    // final CharArraySet stopWordSet = new CharArraySet(list, false);
     final StandardTokenizer src = new StandardTokenizer();
     src.setMaxTokenLength(maxTokenLength);
     TokenStream tok = new StandardFilter(src);
